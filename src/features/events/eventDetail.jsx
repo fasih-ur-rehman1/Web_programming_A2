@@ -2,24 +2,37 @@ import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEventById, clearSelectedEvent } from './eventsSlice';
+import { registerForEvent, clearRegistrationMessage } from '../registrations/registrationSlice';
 
 export default function EventDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
 
   const { selectedEvent, loading, error } = useSelector((state) => state.events);
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { currentUser, isAuthenticated } = useSelector((state) => state.auth);
+  const { items: registrations, message } = useSelector((state) => state.registrations);
 
   useEffect(() => {
     dispatch(fetchEventById(id));
     return () => {
       dispatch(clearSelectedEvent());
+      dispatch(clearRegistrationMessage());
     };
   }, [dispatch, id]);
 
   if (loading) return <p style={{ padding: '20px' }}>Loading event details...</p>;
   if (error) return <p style={{ padding: '20px', color: 'red' }}>Error: {error}</p>;
   if (!selectedEvent) return null;
+
+  // Check if current user is already registered for this specific event
+  const isAlreadyRegistered = registrations.some(
+    (reg) => reg.userId === currentUser?.id && reg.event.id === selectedEvent.id
+  );
+
+  const handleRegister = () => {
+    if (!isAuthenticated) return;
+    dispatch(registerForEvent({ userId: currentUser.id, event: selectedEvent }));
+  };
 
   const image = selectedEvent.images?.[0]?.url;
   const venue = selectedEvent._embedded?.venues?.[0];
@@ -64,15 +77,40 @@ export default function EventDetail() {
         </div>
       </div>
 
-      {/* Action banner: prompt login or ready to register */}
-      <div style={{ marginTop: '30px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+      {/* Feedback banner (Success / Error messages) */}
+      {message && (
+        <div style={{
+          padding: '10px 15px',
+          marginBottom: '15px',
+          borderRadius: '4px',
+          backgroundColor: message.type === 'error' ? '#f8d7da' : '#d4edda',
+          color: message.type === 'error' ? '#721c24' : '#155724'
+        }}>
+          {message.text}
+        </div>
+      )}
+
+      {/* Action banner: Register or Prompt Login */}
+      <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
         {isAuthenticated ? (
-          <p style={{ margin: 0, color: '#28a745', fontWeight: 'bold' }}>
-            ✓ Ready for registration (we connect the Register action in Step 5).
-          </p>
+          <button
+            onClick={handleRegister}
+            disabled={isAlreadyRegistered}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: isAlreadyRegistered ? '#6c757d' : '#28a745',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: isAlreadyRegistered ? 'not-allowed' : 'pointer',
+              fontWeight: 'bold',
+            }}
+          >
+            {isAlreadyRegistered ? 'Registered' : 'Register for Event'}
+          </button>
         ) : (
           <p style={{ margin: 0 }}>
-            Want to attend? <Link to="/login">Login</Link> or <Link to="/register">Register</Link> to save this event.
+            Want to attend? <Link to="/login">Login</Link> or <Link to="/register">Register</Link> to book your spot.
           </p>
         )}
       </div>
