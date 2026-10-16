@@ -1,16 +1,38 @@
-# React + Vite
+# Event Management System (EMS)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web application built with **React**, **Redux Toolkit**, **React Router**, and the **Ticketmaster Discovery API**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **User Authentication (Frontend Simulation):**
+  - Registration (Name, Email, Password) with duplicate validation.
+  - Login/Logout session management.
+  - State persistence across page refreshes via `localStorage`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Event Exploration & Discovery:**
+  - Live event browsing powered by Ticketmaster Discovery API.
+  - Real-time keyword search (artist, team, or venue name).
+  - Category filtering (Music, Sports, Arts & Theatre, Film, Miscellaneous).
+  - Detailed single-event views showing dates, timings, venues, and pricing.
 
-## Expanding the ESLint configuration
+- **Event Registration & Management:**
+  - Authenticated event registration with duplicate prevention.
+  - Immediate visual feedback notifications on actions.
+  - Dedicated **My Events** section partitioned into:
+    - **Upcoming Events** (with cancellation option).
+    - **Completed Events** (archived history).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Technologies Used
+
+- **React.js** (Functional Components & Hooks)
+- **Redux Toolkit (`@reduxjs/toolkit`)**: Global state slices (`authSlice`, `eventsSlice`, `registrationSlice`).
+- **React-Redux**: Store provider and `useSelector` / `useDispatch` bindings.
+- **React Router (`react-router-dom`)**: Client-side declarative routing and protected routes.
+- **Ticketmaster Discovery API v2**: Real-world external event ingestion.
+- **Vite**: Modern tooling and bundling environment.
+
+---
